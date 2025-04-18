@@ -1,7 +1,4 @@
 <?php
-session_start();
-require 'config.php'; // Arquivo de conexão com o banco
-
 // Verifica se o formulário foi enviado
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Recebe os dados do formulário

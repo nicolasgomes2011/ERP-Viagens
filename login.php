@@ -28,14 +28,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <head>
     <meta charset="UTF-8">
+<link rel="icon" type="image/png" href="img/soft_tech_favicon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | ERP SoftTech</title>
+    <link rel="icon" type="image/png" href="img/soft_tech_favicon.png">
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .logo{
+            width: 50%;
+        }
+    </style>
 </head>
 
 <body class="flex items-center justify-center h-screen bg-gray-100">
     <div class="bg-white p-8 rounded-lg shadow-lg w-96">
-        <h2 class="text-2xl font-bold text-center text-gray-700 mb-6">Login</h2>
+        <div class="flex justify-center mb-6">
+            <img src="img/Soft_Tech_Sem_Fundo.png" alt="Logo" class="logo">
+        </div>
 
         <?php
         session_start();

@@ -3,6 +3,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+<link rel="icon" type="image/png" href="img/soft_tech_favicon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastrar Usuário</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
@@ -19,12 +20,16 @@
                 <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
                 <input type="email" id="email" name="email" class="mt-1 p-2 w-full border border-gray-300 rounded-md" required>
             </div>
+            
             <div class="mb-4">
                 <label for="senha" class="block text-sm font-medium text-gray-700">Senha</label>
                 <input type="password" id="senha" name="senha" class="mt-1 p-2 w-full border border-gray-300 rounded-md" required>
             </div>
             <div class="mb-4 flex justify-center">
                 <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Cadastrar</button>
+            </div>
+            <div class="mb-4 flex justify-center">
+                <a href="login.php" class="text-blue-500 hover:underline">Voltar</a>
             </div>
         </form>
     </div>

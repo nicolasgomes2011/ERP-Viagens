@@ -2,6 +2,7 @@
 
 session_save_path("C:/php_sessions");
 session_start(); 
+extract($_REQUEST);
 
 
 require_once "funcoes.php";

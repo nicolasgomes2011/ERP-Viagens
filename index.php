@@ -33,186 +33,246 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
     exit;
 }
 
-;
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
     <meta charset="UTF-8">
+<link rel="icon" type="image/png" href="img/soft_tech_favicon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ERP - Pacotes de Viagem</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    </head>
 
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-light text-dark">
 
+
+    <?php
+    if (isset($_GET['error'])) {
+        $status = $_GET['error'] == 0 ? 'success' : 'error';
+        $msg = $_GET['msg'] ?? 'Ocorreu um erro inesperado.';
+        echo "<script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        if ('$status' === 'success') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Sucesso!',
+                                text: '$msg',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                window.location.href = window.location.origin + window.location.pathname;
+                            });
+                        } else if ('$status' === 'error') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Erro!',
+                                text: '$msg',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                window.location.href = window.location.origin + window.location.pathname;
+                            });
+                        }
+                    });
+                </script>";
+    }
+    ?>
     <!-- Botão de Logout -->
-    <form method="POST" class="absolute top-4 right-4">
-        <button type="submit" name="logout"
-            class="px-4 py-2 bg-red-500 text-white rounded-full shadow-md flex items-center gap-2 hover:bg-red-600 transition focus:outline-none focus:ring-2 focus:ring-red-400">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 11-6 0v-1m6-10V5a3 3 0 00-6 0v1" />
+    <form method="POST" class="position-absolute top-0 end-0 m-3">
+        <button type="submit" name="logout" class="btn btn-danger d-flex align-items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                <path fill-rule="evenodd"
+                    d="M6 3a1 1 0 0 0-1 1v1h1V4h6v8H6v-1H5v1a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H6z" />
+                <path fill-rule="evenodd"
+                    d="M.146 8.354a.5.5 0 0 1 0-.708L3.5 4.293a.5.5 0 1 1 .707.707L1.707 8l2.5 2.5a.5.5 0 0 1-.707.707l-3.354-3.354z" />
             </svg>
             Sair
         </button>
     </form>
 
     <?php if ($usuarioLogado): ?>
-        <div class="absolute top-4 right-32 bg-white px-4 py-2 rounded-md shadow text-gray-800 text-sm">
+        <div class="position-absolute top-0 end-0 m-5 bg-white px-3 py-2 rounded shadow-sm small">
             Logado como <strong><?= htmlspecialchars($usuarioLogado['nome']) ?></strong>
             (<?= htmlspecialchars($usuarioLogado['cargo']) ?>)
         </div>
     <?php endif; ?>
 
-    <div class="max-w-4xl mx-auto mt-12 p-6 bg-white shadow-md rounded-lg my-2 mt-12">
-        <h1 class="text-2xl font-semibold text-center">Lista de Pacotes de Viagem</h1>
+    <div class="container mt-5">
+        <div class="bg-white p-4 shadow rounded mb-4">
+            <h2 class="text-center mb-4">Lista de Pacotes de Viagem</h2>
 
-        <?php if (isset($errorMsg)): ?>
-            <div class="bg-red-50 text-red-600 p-4 rounded-md my-4">
-                <strong>Erro!</strong> <?= htmlspecialchars($errorMsg) ?>
-            </div>
-        <?php elseif (empty($pacotes)): ?>
-            <div class="text-center text-gray-600 p-4 rounded-md bg-gray-100">
-                Nenhum pacote cadastrado no momento.
-            </div>
-        <?php else: ?>
-            <table class="w-full mt-4 text-left border-collapse">
-                <thead>
-                    <tr class="bg-gray-100 text-gray-700">
-                        <th class="p-2">Nome</th>
-                        <th class="p-2">Destino</th>
-                        <th class="p-2">Preço</th>
-                        <th class="p-2">Data</th>
-                        <th class="p-2 text-center">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($pacotes as $pacote): ?>
-                        <tr class="border-b">
-                            <td class="p-2"><?= htmlspecialchars($pacote['nome']) ?></td>
-                            <td class="p-2"><?= htmlspecialchars($pacote['destino']) ?></td>
-                            <td class="p-2 text-green-600">R$ <?= number_format($pacote['preco'], 2, ',', '.') ?></td>
-                            <td class="p-2"><?= date("d/m/Y", strtotime($pacote['data_partida'])) ?></td>
-                            <td class="p-2 text-center">
-                                <a href="editar_pacote.php?id=<?= $pacote['id'] ?>" class="text-blue-600 hover:underline">Editar</a> |
-                                <a href="excluir_pacote.php?id=<?= $pacote['id'] ?>" class="text-red-600 hover:underline"
-                                    onclick="return confirm('Tem certeza?');">Excluir</a>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        <?php endif; ?>
-
-        <div class="text-center mt-6">
-            <a href="adicionar_pacote.php" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
-                + Adicionar Novo Pacote
-            </a>
-        </div>
-
-        <h2 class="text-2xl font-semibold text-center mt-12">Lista de Clientes</h2>
-
-        <?php if (isset($errorMsgClientes)): ?>
-            <div class="bg-red-50 text-red-600 p-4 rounded-md my-4">
-                <strong>Erro!</strong> <?= htmlspecialchars($errorMsgClientes) ?>
-            </div>
-        <?php elseif (empty($clientes)): ?>
-            <div class="text-center text-gray-600 p-4 rounded-md bg-gray-100">
-                Nenhum cliente cadastrado no momento.
-            </div>
-        <?php else: ?>
-            <table class="w-full mt-4 text-left border-collapse">
-                <thead>
-                    <tr class="bg-gray-100 text-gray-700">
-                        <th class="p-2">Nome</th>
-                        <th class="p-2">E-mail</th>
-                        <th class="p-2">Telefone</th>
-                        <th class="p-2 text-center">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($clientes as $cliente): ?>
-                        <tr class="border-b">
-                            <a href="editar_cliente.php?id=<?= $cliente['id'] ?>" class="text-blue-600 hover:underline">
-                                <td class="p-2">
-                                    <?= htmlspecialchars($cliente['nome']) ?>
-                                </td>
-                                <td class="p-2"><?= htmlspecialchars($cliente['email']) ?></td>
-                                <td class="p-2"><?= htmlspecialchars($cliente['telefone']) ?></td>
-                                <td class="p-2 text-center">
-                                    <a href="editar_cliente.php?id=<?= $cliente['id'] ?>" class="text-blue-600 hover:underline">Editar</a> |
-                                    <a href="excluir_cliente.php?id=<?= $cliente['id'] ?>" class="text-red-600 hover:underline"
-                                        onclick="return confirm('Tem certeza?');">Excluir</a>
-                                    <button onclick="openModal(<?= $cliente['id'] ?>, '<?= $cliente['nome'] ?>')" class="text-green-600 hover:underline">
-                                        Atribuir Pacote
-                                    </button>
-                                </td>
-                            </a>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        <?php endif; ?>
-
-        <div class="text-center mt-6">
-            <a href="cadastro_cliente.php" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
-                + Cadastrar novo cliente
-            </a>
-        </div>
-    </div>
-
-    <!-- Modal -->
-    <div id="modal" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
-        <div class="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h2 class="text-xl font-semibold mb-4">Atribuir Pacote a <span id="clienteNome"></span></h2>
-            <form id="formAtribuirPacote" action="atribuir_pacote.php" method="POST">
-                <input type="hidden" name="cliente_id" id="clienteId">
-                <labwel class="block mb-2">Escolha um pacote:</labwel>
-                <select name="pacote_id" class="w-full p-2 border rounded-md">
-                    <?php foreach ($pacotes as $pacote): ?>
-                        <option value="<?= $pacote['id'] ?>"><?= htmlspecialchars($pacote['nome']) ?> - R$ <?= number_format($pacote['preco'], 2, ',', '.') ?></option>
-                    <?php endforeach; ?>
-                </select>
-                <div class="mt-4 flex justify-end">
-                    <button type="button" onclick="closeModal()" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500">Cancelar</button>
-                    <button type="submit" class="ml-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Salvar</button>
+            <?php if (isset($errorMsg)): ?>
+                <div class="alert alert-danger"><?= htmlspecialchars($errorMsg) ?></div>
+            <?php elseif (empty($pacotes)): ?>
+                <div class="alert alert-info text-center">Nenhum pacote cadastrado no momento.</div>
+            <?php else: ?>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nome</th>
+                                <th width="40%">Destino</th>
+                                <th>Preço</th>
+                                <th>Data</th>
+                                <th class="text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($pacotes as $pacote): ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($pacote['nome']) ?></td>
+                                    <td><?= htmlspecialchars($pacote['destino']) ?></td>
+                                    <td class="text-success">R$ <?= number_format($pacote['preco'], 2, ',', '.') ?></td>
+                                    <td><?= date("d/m/Y", strtotime($pacote['data_partida'])) ?></td>
+                                    <td class="text-center">
+                                        <a href="adicionar_pacote.php?edit=1&id=<?= $pacote['id'] ?>"
+                                            class="text-primary">Editar</a> |
+                                        <a href="acao/acao-excluir-pacote.php?id=<?= $pacote['id'] ?>" class="text-danger delete-link" data-url="acao/acao-excluir-pacote.php?id=<?= $pacote['id'] ?>">Excluir</a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
                 </div>
-            </form>
+            <?php endif; ?>
+
+            <div class="text-center mt-4">
+                <a href="adicionar_pacote.php" class="btn btn-primary">+ Adicionar Novo Pacote</a>
+            </div>
+        </div>
+
+        <div class="bg-white p-4 shadow rounded">
+            <h2 class="text-center mb-4">Lista de Clientes</h2>
+
+            <?php if (isset($errorMsgClientes)): ?>
+                <div class="alert alert-danger"><?= htmlspecialchars($errorMsgClientes) ?></div>
+            <?php elseif (empty($clientes)): ?>
+                <div class="alert alert-info text-center">Nenhum cliente cadastrado no momento.</div>
+            <?php else: ?>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nome</th>
+                                <th>E-mail</th>
+                                <th>Telefone</th>
+                                <th class="text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($clientes as $cliente): ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($cliente['nome']) ?></td>
+                                    <td><?= htmlspecialchars($cliente['email']) ?></td>
+                                    <td><?= htmlspecialchars($cliente['telefone']) ?></td>
+                                    <td class="text-center">
+                                        <a href="cadastro_cliente.php?id=<?= $cliente['id'] ?>&edit=1" class="text-primary">Editar</a> |
+                                        <a href="acao/acao-excluir-cliente.php?id=<?= $cliente['id'] ?>" class="text-danger delete-link" data-url="acao/acao-excluir-cliente.php?id=<?= $cliente['id'] ?>">Excluir</a> |
+                                        <button onclick="openModal(<?= $cliente['id'] ?>, '<?= $cliente['nome'] ?>')"
+                                            class="btn btn-sm btn-success">Atribuir Pacote</button>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+
+            <div class="text-center mt-4">
+                <a href="cadastro_cliente.php" class="btn btn-primary">+ Cadastrar novo cliente</a>
+            </div>
         </div>
     </div>
 
+    <!-- Modal Bootstrap -->
+    <div id="modal" class="modal fade" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form id="formAtribuirPacote" action="atribuir_pacote.php" method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Atribuir Pacote a <span id="clienteNome"></span></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="cliente_id" id="clienteId">
+                        <div class="mb-3">
+                            <label class="form-label">Escolha um pacote:</label>
+                            <select name="pacote_id" class="form-select">
+                                <?php foreach ($pacotes as $pacote): ?>
+                                    <option value="<?= $pacote['id'] ?>"><?= htmlspecialchars($pacote['nome']) ?> - R$
+                                        <?= number_format($pacote['preco'], 2, ',', '.') ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts Bootstrap + Modal lógica -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        let modal = new bootstrap.Modal(document.getElementById('modal'));
+
         function openModal(clienteId, clienteNome) {
             document.getElementById("clienteId").value = clienteId;
             document.getElementById("clienteNome").innerText = clienteNome;
-            document.getElementById("modal").classList.remove("hidden");
+            modal.show();
         }
 
-        function closeModal() {
-            document.getElementById("modal").classList.add("hidden");
-        }
-
-        // Enviar dados do formulário via AJAX
         document.getElementById('formAtribuirPacote').addEventListener('submit', function(event) {
             event.preventDefault();
-
-            var formData = new FormData(this);
-
+            const formData = new FormData(this);
             fetch('atribuir_pacote.php', {
-                method: 'POST',
-                body: formData
-            }).then(response => response.json()).then(data => {
-                if (data.status === 'success') {
-                    alert('Pacote atribuído com sucesso!');
-                    closeModal();
-                } else {
-                    alert('Erro: ' + data.message);
-                }
-            }).catch(error => console.error('Erro:', error));
+                    method: 'POST',
+                    body: formData
+                }).then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('Pacote atribuído com sucesso!');
+                        modal.hide();
+                    } else {
+                        alert('Erro: ' + data.message);
+                    }
+                }).catch(err => console.error('Erro:', err));
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Seleciona todos os links de exclusão
+            const deleteLinks = document.querySelectorAll('.delete-link');
+
+            deleteLinks.forEach(link => {
+                link.addEventListener('click', function (event) {
+                    event.preventDefault(); // Impede o redirecionamento imediato
+
+                    const url = this.getAttribute('data-url'); // Obtém a URL do atributo data-url
+
+                    Swal.fire({
+                        title: 'Você tem certeza?',
+                        text: "Essa ação não poderá ser desfeita!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Sim, excluir!',
+                        cancelButtonText: 'Cancelar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = url; // Redireciona para a URL de exclusão
+                        }
+                    });
+                });
+            });
         });
     </script>
-
 
 </body>
 

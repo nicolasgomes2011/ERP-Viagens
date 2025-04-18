@@ -1,7 +1,8 @@
-<?php 
+<?php
 
 if (!function_exists('dump')) {
-    function dump(...$args) {
+    function dump(...$args)
+    {
         echo '<style>
                 pre.dd-dump {
                     background-color: #282a36;
@@ -28,14 +29,16 @@ if (!function_exists('dump')) {
 }
 
 if (!function_exists('dd')) {
-    function dd(...$args) {
+    function dd(...$args)
+    {
         dump(...$args);
         exit();
     }
 }
 
 if (!function_exists('dumpVariable')) {
-    function dumpVariable($var, $indent = 0, $showType = true) {
+    function dumpVariable($var, $indent = 0, $showType = true)
+    {
         $type = gettype($var);
         $indentation = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $indent);
 
@@ -170,17 +173,36 @@ if (!function_exists('dumpVariable')) {
     }
 }
 
-function object_to_array($variable) {
-    $result = (array) $variable;
 
-    foreach($result as &$value) {
+if (!function_exists('object_to_array')) {
 
-        if ($value instanceof stdClass) {
-            $value = object_to_array($value);
+    function object_to_array($variable)
+    {
+        $result = (array) $variable;
+
+        foreach ($result as &$value) {
+
+            if ($value instanceof stdClass) {
+                $value = object_to_array($value);
+            }
         }
-   }
 
-    return $result;
+        return $result;
+    }
 }
+if (!function_exists('extract_number_with_decimal')) {
 
-?>
+    function extract_number_with_decimal($input)
+    {
+        if (is_numeric($input)) {
+            return (float)$input;
+        }
+
+        if (is_string($input)) {
+            preg_match('/-?\d+(\.\d+)?/', $input, $matches);
+            return isset($matches[0]) ? (float)$matches[0] : null;
+        }
+
+        return null;
+    }
+}
