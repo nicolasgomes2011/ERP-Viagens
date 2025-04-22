@@ -22,7 +22,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $redirect = $isEdit ? "../adicionar_pacote.php?edit=1&id=$id" : "../adicionar_pacote.php?";
         header("Location: $redirect&error=1&msg=Preencha todos os campos obrigatórios!");
         exit;
-}   
+    }
+
+    // Verifica se um arquivo foi enviado
+    if (isset($_FILES['imagem'])) {
+        if ($_FILES['imagem']['error'] !== UPLOAD_ERR_OK) {
+            $_SESSION['msg'] = 'Erro no upload da imagem: ' . $_FILES['imagem']['error'];
+            header('Location: ../adicionar_pacote.php?error=1');
+            exit;
+        }
+
+        $uploadDir = '../uploads/';
+        $fileName = uniqid() . '-' . basename($_FILES['imagem']['name']);
+        $uploadFile = $uploadDir . $fileName;
+
+        // Debug: Verifica se o diretório de upload existe e é gravável
+        if (!is_dir($uploadDir)) {
+            $_SESSION['msg'] = 'Diretório de upload não existe: ' . $uploadDir;
+            header('Location: ../adicionar_pacote.php?error=1');
+            exit;
+        }
+
+        if (!is_writable($uploadDir)) {
+            $_SESSION['msg'] = 'Diretório de upload não é gravável: ' . $uploadDir;
+            header('Location: ../adicionar_pacote.php?error=1');
+            exit;
+        }
+
+        // Debug: Verifica o caminho completo do arquivo de upload
+        $_SESSION['msg'] = 'Tentando mover o arquivo para: ' . $uploadFile;
+
+        // Move o arquivo para a pasta de uploads
+        if (move_uploaded_file($_FILES['imagem']['tmp_name'], $uploadFile)) {
+            $imagem = $fileName; // Salva o nome do arquivo no banco de dados
+        } else {
+            $_SESSION['msg'] = 'Erro ao salvar a imagem. Caminho: ' . $uploadFile;
+            header('Location: ../adicionar_pacote.php?error=1');
+            exit;
+        }
+    }
 
     try {
         if ($isEdit) {
@@ -37,9 +75,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         } else {
             // Insere novo pacote
-            $stmt = $pdo->prepare("INSERT INTO pacotes_viagem (nome, destino, descricao, preco, data_partida, data_saida) 
-                                   VALUES (?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$nome, $local_para_visitar, $descricao, $preco, $data_partida, $data_saida]);
+            $stmt = $pdo->prepare("INSERT INTO pacotes_viagem (nome, destino, descricao, preco, data_partida, data_saida, imagem) 
+                                   VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$nome, $local_para_visitar, $descricao, $preco, $data_partida, $data_saida, $imagem]);
 
             $_SESSION['msg'] = 'Pacote cadastrado com sucesso!';
             header('Location: ../index.php?error=0&msg=Pacote cadastrado com sucesso!');
