@@ -72,8 +72,11 @@ if (!empty($pacotes['destino'])) {
             <h2 class="h4 mb-4 text-center text-primary">
                 <?= $edit == 1 ? 'Editar Pacote de Viagem' : 'Cadastro de Pacote de Viagem' ?>
             </h2>
-            <form action="acao/acao-cadastrar-pacote.php" method="POST">
-
+            <form action="acao/acao-cadastrar-pacote.php" method="POST" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="imagem" class="form-label">Foto do Pacote</label>
+                    <input type="file" id="imagem" name="imagem" class="form-control" accept="image/*">
+                </div>
                 <div class="mb-3">
                     <label for="nome" class="form-label">Nome do Pacote</label>
                     <input type="text" value="<?= $pacotes['nome'] ?? '' ?>" id="nome" name="nome" class="form-control" required>
