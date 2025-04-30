@@ -195,10 +195,13 @@ if (!function_exists('extract_number_with_decimal')) {
     function extract_number_with_decimal($input)
     {
         if (is_numeric($input)) {
+            dd((float)$input);
             return (float)$input;
         }
 
         if (is_string($input)) {
+            // Remove separadores de milhar e substitui vírgula decimal por ponto
+            $input = str_replace(['.', ','], ['', '.'], $input);
             preg_match('/-?\d+(\.\d+)?/', $input, $matches);
             return isset($matches[0]) ? (float)$matches[0] : null;
         }

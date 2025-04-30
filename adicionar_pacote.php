@@ -76,6 +76,15 @@ if (!empty($pacotes['destino'])) {
                 <div class="mb-3">
                     <label for="imagem" class="form-label">Foto do Pacote</label>
                     <input type="file" id="imagem" name="imagem" class="form-control" accept="image/*">
+                    <?php if ($edit == 1 && !empty($pacotes['imagem'])): ?>
+                        <div class="mt-3">
+                            <label class="form-label">Imagem Atual:</label>
+                            <div>
+                                <img src="uploads/<?= htmlspecialchars($pacotes['imagem']) ?>" alt="Imagem do Pacote" class="img-thumbnail" style="max-width: 200px;">
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                    <div></div>
                 </div>
                 <div class="mb-3">
                     <label for="nome" class="form-label">Nome do Pacote</label>

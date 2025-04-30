@@ -66,9 +66,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($isEdit) {
             // Atualiza o pacote existente
             $stmt = $pdo->prepare("UPDATE pacotes_viagem 
-                                   SET nome = ?, destino = ?, descricao = ?, preco = ?, data_partida = ?, data_saida = ? 
+                                   SET nome = ?, destino = ?, descricao = ?, preco = ?, data_partida = ?, data_saida = ?, imagem = ? 
                                    WHERE id = ?");
-            $stmt->execute([$nome, $local_para_visitar, $descricao, $preco, $data_partida, $data_saida, $id]);
+            $stmt->execute([$nome, $local_para_visitar, $descricao, $preco, $data_partida, $data_saida, $imagem, $id]);
 
             $_SESSION['msg'] = 'Pacote editado com sucesso!';
             header("Location: ../index.php?error=0&msg=Pacote editado com sucesso!");
